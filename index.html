@@ -208,7 +208,9 @@ const SCHEDULE=[["14:30","여는 이야기","10분","hex6","var(--hex)",null],["
 
 const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(v==null)continue;if(n==="class")e.className=v;else if(n==="html")e.innerHTML=v;else if(n.startsWith("on"))e.addEventListener(n.slice(2),v);else e.setAttribute(n,v);}for(const c of k.flat()){if(c==null)continue;e.append(c.nodeType?c:document.createTextNode(c));}return e;};
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-const morph=fn=>{ if(!document.startViewTransition||reduce) return fn(); const v=document.startViewTransition(fn); v.ready.catch(()=>{}); v.finished.catch(()=>{}); };
+const morph=(fn,instant)=>{ if(instant||!document.startViewTransition||reduce||document.hidden) return fn();
+  let ran=false; const run=()=>{ if(!ran){ ran=true; fn(); } };
+  const v=document.startViewTransition(run); v.ready.catch(()=>{}); v.updateCallbackDone.catch(run); v.finished.catch(run); setTimeout(run,1200); };
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 
 function copyText(text,btn,fallbackNode){
@@ -229,7 +231,7 @@ TOPICS.forEach(t=>{
 let curTopic=null, lastTopic=null; const curItem={};
 const view=document.getElementById("view"), home=document.getElementById("home");
 function tag(id){ grid.querySelectorAll(".big").forEach(b=>b.style.viewTransitionName=(b.dataset.id===id?"card":"none")); }
-function route(){
+function route(instant){
   const id=location.hash.slice(1), t=TOPICS.find(x=>x.id===id)||null;
   // 바뀌기 전 상태: 열릴 버튼(또는 열려 있던 화면)에 이름을 붙임
   if(t){ tag(t.id); view.style.viewTransitionName="none"; } else { view.style.viewTransitionName="card"; tag(null); }
@@ -237,9 +239,9 @@ function route(){
     if(!t){ home.hidden=false; view.hidden=true; view.style.viewTransitionName="none"; if(lastTopic) tag(lastTopic); curTopic=null; return; }
     tag(null); home.hidden=true; view.hidden=false; view.style.viewTransitionName="card";
     curTopic=t; lastTopic=t.id; renderView();
-  });
+  }, instant===true);
 }
-addEventListener("hashchange",route);
+addEventListener("hashchange",()=>route());
 
 function renderView(){
   const t=curTopic;
@@ -349,7 +351,7 @@ function openDlg(title,node){ document.getElementById("dlgTitle").textContent=ti
 document.getElementById("dlgClose").addEventListener("click",()=>dlg.close());
 dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
 
-route(); load();
+route(true); load();
 setInterval(()=>{ if(API_URL&&!document.hidden) load(); },20000);
 </script>
 </body>
