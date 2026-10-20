@@ -6,349 +6,351 @@
 <title>옥계초 AI 수학 연수</title>
 <meta name="description" content="생성형 AI로 만드는 우리 반 맞춤형 수학 학습자료 — 실습 프롬프트와 작품 링크 나눔">
 <meta property="og:title" content="옥계초 AI 수학 연수">
-<meta property="og:description" content="바이브코딩 · 생성형 이미지 · 제미나이 노트북 실습 프롬프트 복사하고, 내 작품 링크 올리기">
+<meta property="og:description" content="차례 안내 · 바이브코딩 · 생성형 이미지 · 제미나이 노트북">
 <meta name="color-scheme" content="light dark">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
 <style>
-/* 흰 바탕 · 위에서 아래로 한 줄: 흐름 → 실습 카드(프롬프트 복사 + 링크 댓글) → 마무리 */
+/* 한 화면 앱: 첫 화면 큰 버튼 4개 → 누른 버튼이 화면 전체로 모핑되어 내용이 된다 */
 :root{
   --bg:#ffffff; --surface:#f6f7fb; --line:#e4e6ef; --fg:#2e3350; --muted:#6b7088;
   --hex:#ffc23d; --trap:#ff7a7a; --rho:#4f8ff7; --tri:#2ec4a0; --sq:#ff9f43;
-  --p1:#ff7a7a; --p1-l:#ffeceb; --p2:#8b7bff; --p2-l:#efedff; --p3:#3fa9f5; --p3-l:#e6f3fe;
+  --t0:#ff9f43; --t0-l:#fff1e2; --p1:#ff6b6b; --p1-l:#ffeceb; --p2:#7b6cf6; --p2-l:#efedff; --p3:#2f9be8; --p3-l:#e6f3fe;
   --code:#fffaf0; --link:#2f6fe0; --on:#ffffff;
   --display:"Jua","Noto Sans KR","Malgun Gothic",sans-serif;
   --body:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root{
   --bg:#161826; --surface:#1f2234; --line:#30344b; --fg:#eef0fa; --muted:#a3a8c3;
-  --p1-l:#3a2427; --p2-l:#29254a; --p3-l:#1b2c42; --code:#23263a; --link:#86b3ff; --on:#161826 } }
+  --t0-l:#3a2d1e; --p1-l:#3a2427; --p2-l:#29254a; --p3-l:#1b2c42; --code:#23263a; --link:#86b3ff; --on:#161826 } }
 
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.65;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.wrap{max-width:860px;margin:0 auto}
-h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.3;text-wrap:balance}
-button{font:inherit;cursor:pointer}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;overflow:hidden}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.25;text-wrap:balance}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
 a{color:var(--link)}
 :focus-visible{outline:3px solid var(--rho);outline-offset:2px}
+[hidden]{display:none!important}
 
-/* 패턴블럭 모핑: 모든 모양이 같은 6점 다각형이라 서로 부드럽게 바뀐다 */
+.app{height:100dvh;display:flex;flex-direction:column;
+  padding:max(14px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+
+/* 패턴블럭 6점 다각형 — 같은 점 개수라 서로 모핑 */
 .pb{--hex6:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
     --tri6:polygon(50% 4%,50% 4%,75% 48%,98% 92%,2% 92%,25% 48%);
     --sq6:polygon(8% 8%,92% 8%,92% 50%,92% 92%,8% 92%,8% 50%);
     --rho6:polygon(50% 2%,50% 2%,98% 50%,50% 98%,50% 98%,2% 50%);
     --trap6:polygon(25% 14%,75% 14%,87% 50%,100% 86%,0% 86%,13% 50%);
-    aspect-ratio:1/1;transition:clip-path .7s cubic-bezier(.6,.05,.3,1.2),background-color .5s,transform .5s}
+    aspect-ratio:1/1;flex:none;transition:clip-path .6s cubic-bezier(.6,.05,.3,1.2),transform .5s}
 
-header{padding-block:44px 28px;display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-header .txt{flex:1 1 380px;min-width:0}
-.eyebrow{display:inline-block;background:var(--trap);color:var(--on);font-weight:700;font-size:13px;padding:4px 12px;border-radius:999px}
-h1{font-size:clamp(32px,6vw,50px);margin-top:12px}
-h1 em{font-style:normal;color:var(--trap)}
-.meta{color:var(--muted);margin:10px 0 0}
-.stage{position:relative;width:200px;height:200px;flex:none}
-.stage .pb{position:absolute}
-.s1{width:110px;left:45px;top:45px;animation:mA 8s infinite}
-.s2{width:62px;left:0;top:0;animation:mB 8s infinite}
-.s3{width:56px;right:0;top:12px;animation:mC 8s infinite}
-.s4{width:60px;left:8px;bottom:0;animation:mD 8s infinite}
-.s5{width:52px;right:6px;bottom:8px;animation:mE 8s infinite}
+/* ---------- 첫 화면 ---------- */
+#home{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(16px,4vh,36px);max-width:980px;width:100%;margin:0 auto;min-height:0}
+.title{display:flex;align-items:center;gap:16px}
+.title .logo{width:64px;height:64px;flex:none}
+.title .logo .pb{width:64px;animation:mA 8s infinite}
 @keyframes mA{0%,20%{clip-path:var(--hex6);background:var(--hex)}25%,45%{clip-path:var(--trap6);background:var(--trap)}50%,70%{clip-path:var(--rho6);background:var(--rho)}75%,95%{clip-path:var(--tri6);background:var(--tri)}100%{clip-path:var(--hex6);background:var(--hex)}}
-@keyframes mB{0%,40%{clip-path:var(--tri6);background:var(--tri)}50%,90%{clip-path:var(--sq6);background:var(--sq);transform:rotate(45deg)}100%{clip-path:var(--tri6);background:var(--tri)}}
-@keyframes mC{0%,40%{clip-path:var(--rho6);background:var(--rho)}50%,90%{clip-path:var(--hex6);background:var(--hex)}100%{clip-path:var(--rho6);background:var(--rho)}}
-@keyframes mD{0%,40%{clip-path:var(--trap6);background:var(--trap)}50%,90%{clip-path:var(--tri6);background:var(--tri);transform:rotate(180deg)}100%{clip-path:var(--trap6);background:var(--trap)}}
-@keyframes mE{0%,40%{clip-path:var(--sq6);background:var(--sq)}50%,90%{clip-path:var(--rho6);background:var(--rho)}100%{clip-path:var(--sq6);background:var(--sq)}}
+.title small{display:block;color:var(--muted);font-size:14px}
+.title h1{font-size:clamp(24px,4vw,38px)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.big{border:0;border-radius:28px;background:var(--acc-l);padding:clamp(18px,4vh,40px) 12px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;transition:transform .2s}
+.big .pb{width:clamp(64px,10vw,104px);background:var(--acc)}
+.big b{font-family:var(--display);font-weight:400;font-size:clamp(20px,2.4vw,28px);line-height:1.2}
+.big small{color:var(--muted);font-size:14px}
+.big:hover{transform:translateY(-4px)}
+.big:hover .pb{clip-path:var(--hex6)!important;transform:rotate(30deg)}
+.meta{color:var(--muted);font-size:14px;margin:0}
 
-/* 랜딩: 큰 주제 버튼 3개 */
-.topics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px}
-.topic{border:0;background:var(--acc-l);color:var(--fg);border-radius:26px;padding:34px 14px 30px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;transition:transform .25s}
-.topic .pb{width:110px}
-.topic .t{display:grid;gap:4px}
-.topic b{font-family:var(--display);font-weight:400;font-size:clamp(24px,3.4vw,32px);line-height:1.2}
-.topic small{color:var(--muted);font-size:15px}
-.topic:hover{transform:translateY(-4px)}
-.topic:hover .pb{clip-path:var(--hex6)!important;transform:rotate(30deg)}
-.back{border:0;background:var(--surface);color:var(--fg);font-weight:700;border-radius:999px;padding:8px 16px;font-size:15px}
-@media (max-width:640px){ .topics{grid-template-columns:1fr;gap:10px} .topic{flex-direction:row;padding:18px 20px;text-align:left;gap:16px} .topic .pb{width:64px} .topic span.t{display:grid} }
-::view-transition-group(*){animation-duration:.55s;animation-timing-function:cubic-bezier(.6,.05,.3,1.1)}
-/* 파트 */
-.part{padding-top:24px}
-.part .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.part h2{font-size:clamp(26px,4vw,32px);display:flex;align-items:center;gap:10px}
-.part h2 .pb{width:52px}
-.part .desc{color:var(--muted);margin:6px 0 0}
-.card{margin-top:16px;background:var(--acc-l);border-radius:20px;padding:22px}
-.card h3{font-size:24px}
-.card h3 span{display:inline-block;background:var(--acc);color:var(--on);font-size:15px;padding:2px 10px;border-radius:999px;margin-right:8px;vertical-align:3px}
-.how{margin:6px 0 0;color:var(--fg)}
-.how b{color:var(--acc)}
-.prompt{margin-top:12px;background:var(--code);border-radius:14px;border:2px dashed var(--line);overflow:hidden}
-.prompt header{all:unset;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px 0 14px}
-.prompt header span{font-weight:700;font-size:14px;color:var(--muted)}
-.prompt pre{margin:0;padding:8px 14px 14px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--body);font-size:17px}
-.copy{border:0;border-radius:10px;background:var(--acc);color:var(--on);font-weight:700;font-size:15px;padding:6px 16px}
+/* ---------- 내용 화면 (버튼이 모핑되어 펼쳐짐) ---------- */
+#view{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--acc-l);border-radius:28px;padding:16px clamp(14px,2.5vw,26px);max-width:1180px;width:100%;margin:0 auto}
+.vhead{display:flex;align-items:center;gap:12px}
+.vhead .pb{width:44px;background:var(--acc);clip-path:var(--hex6)}
+.vhead h2{font-size:clamp(22px,3vw,30px);flex:1;min-width:0}
+.back{border:0;background:var(--bg);font-weight:700;border-radius:999px;padding:8px 16px;font-size:15px;white-space:nowrap}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{border:0;background:var(--bg);border-radius:12px;padding:7px 14px;font-weight:700;font-size:15px}
+.pill[aria-selected="true"]{background:var(--acc);color:var(--on)}
+.body{flex:1;min-height:0;margin-top:12px;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:14px;view-transition-name:body}
+.pane{background:var(--bg);border-radius:20px;padding:16px 18px;min-height:0;overflow:auto}
+.pane h3{font-size:22px}
+.how{margin:2px 0 10px;color:var(--muted);font-size:15px}
+.how b{color:var(--fg)}
+.prompt{background:var(--code);border-radius:14px;border:2px dashed var(--line);margin-top:10px}
+.prompt .ph{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px 0 14px}
+.prompt .ph span{font-weight:700;font-size:13px;color:var(--muted)}
+.prompt pre{margin:0;padding:6px 14px 12px;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--body);font-size:16px}
+.copy{border:0;border-radius:10px;background:var(--acc);color:var(--on);font-weight:700;font-size:14px;padding:5px 14px;white-space:nowrap}
 .copy.done{background:var(--tri)}
-.img{margin-top:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end;background:var(--bg);border-radius:14px;padding:12px}
-.img img{border-radius:10px;display:block;width:100%;max-height:300px;object-fit:contain}
-.btn{display:inline-block;text-decoration:none;border-radius:10px;background:var(--fg);color:var(--bg);font-weight:700;font-size:15px;padding:8px 14px;white-space:nowrap}
-.extra{margin:10px 0 0;font-size:15px}
-.refs{margin-top:12px;background:var(--bg);border-radius:14px;padding:14px}
-.refs h4{margin:0;font-size:16px}
-.refhint{margin:2px 0 8px;font-size:14px;color:var(--muted)}
-.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.refs li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}
-.refs li b{min-width:150px}
-.refs .lk{display:flex;flex-wrap:wrap;gap:6px 12px;flex:1 1 200px}
-.refs .lk span{display:inline-flex;gap:6px;align-items:center}
-.mini{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;font-size:13px;font-weight:700;padding:3px 9px}
-.mini.done{background:var(--tri);color:var(--on);border-color:var(--tri)}
-.pick{border:1.5px solid var(--acc);background:var(--bg);color:var(--fg);border-radius:999px;font-size:13px;font-weight:700;padding:3px 12px;margin-left:auto}
-.pick[aria-pressed="true"]{background:var(--acc);color:var(--on)}
-.pick[aria-pressed="true"]::before{content:"✓ "}
-.styles{margin-top:12px}
-.toggle{border:0;border-radius:12px;background:var(--acc);color:var(--on);font-weight:700;padding:9px 16px}
-.sgrid{margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;view-transition-name:sgrid}
-.sgrid figure{margin:0;background:var(--bg);border-radius:12px;padding:8px;display:grid;gap:6px;align-content:start}
-.sgrid img{width:100%;aspect-ratio:1/1;object-fit:contain;background:var(--surface);border-radius:8px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.tools select{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-size:14px;max-width:100%}
+.ghost{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 12px;font-size:14px;font-weight:700;text-decoration:none;color:var(--fg);white-space:nowrap}
+.ghost.done{background:var(--tri);color:var(--on);border-color:var(--tri)}
+.note{font-size:14px;color:var(--muted);margin:8px 0 0}
+.thumb{display:flex;gap:10px;align-items:center;margin-top:4px}
+.thumb img{width:120px;height:78px;object-fit:cover;border-radius:10px;cursor:zoom-in}
+
+/* 댓글: 이름 + 링크만 */
+.cmt{display:flex;flex-direction:column}
+.cmt h3{font-size:19px}
+.cmt form{display:flex;gap:6px;margin-top:8px}
+.cmt input{min-width:0;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 10px;font-size:15px}
+.cmt input.n{width:30%}
+.cmt input.u{flex:1}
+.cmt .send{border:0;border-radius:10px;background:var(--acc);color:var(--on);font-weight:700;padding:7px 14px;white-space:nowrap}
+.cmt .send:disabled{opacity:.45;cursor:not-allowed}
+.cmt .msg{font-size:13px;color:var(--muted);margin:4px 0 0;min-height:1.2em}
+.cmt ul{list-style:none;margin:6px 0 0;padding:0}
+.cmt li{display:flex;gap:8px;align-items:baseline;padding:6px 2px;border-top:1px solid var(--line);font-size:15px;min-width:0}
+.cmt li b{flex:none}
+.cmt li a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.cmt li .del{border:0;background:none;color:var(--muted);font-size:12px;text-decoration:underline;flex:none}
+.cmt .empty{color:var(--muted);font-size:14px;padding:8px 2px;margin:0}
+
+/* 차례 안내 */
+.toc{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-content:center}
+.step{background:var(--bg);border-radius:20px;padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;border:0}
+.step .pb{width:60px}
+.step time{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.step b{font-family:var(--display);font-weight:400;font-size:21px}
+button.step:hover .pb{clip-path:var(--hex6)!important}
+.step em{font-style:normal;font-size:13px;color:var(--link);font-weight:700}
+
+/* 예시 스타일 · 사진 크게 보기 */
+dialog{border:0;border-radius:22px;padding:16px;width:min(900px,94vw);max-height:90dvh;background:var(--bg);color:var(--fg)}
+dialog::backdrop{background:rgb(20 22 40 / .55)}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.dhead .back{background:var(--surface)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.sgrid figure{margin:0;background:var(--surface);border-radius:12px;padding:8px;display:grid;gap:6px}
+.sgrid img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:8px;background:var(--bg)}
 .sgrid figcaption{font-weight:700;font-size:14px}
+.big-img{max-width:100%;max-height:75dvh;display:block;margin:0 auto;border-radius:12px}
 
-/* 댓글 */
-.cmt{margin-top:14px;background:var(--bg);border-radius:14px;padding:14px}
-.cmt form{display:grid;grid-template-columns:minmax(0,.6fr) minmax(0,1.6fr) auto;gap:8px}
-.cmt input{font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;width:100%;min-width:0}
-.send{border:0;border-radius:10px;background:var(--acc);color:var(--on);font-weight:700;padding:8px 16px;white-space:nowrap}
-.send:disabled{opacity:.5;cursor:not-allowed}
-.msg{font-size:14px;font-weight:700;margin:6px 0 0;min-height:1.3em}
-.clist{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
-.clist li{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline;min-width:0;font-size:15px;padding:4px 0;border-top:1px solid var(--line)}
-.clist .who{font-weight:700}
-.clist a{overflow-wrap:anywhere;min-width:0}
-.del{margin-left:auto;border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline}
-.empty{color:var(--muted);font-size:14px;margin:6px 0 0}
+::view-transition-group(*){animation-duration:.5s;animation-timing-function:cubic-bezier(.5,.05,.25,1)}
 
-/* 마무리 */
-.end{margin-top:40px;padding:22px;border-radius:20px;background:var(--surface)}
-.end ul{margin:10px 0 0;padding-left:20px}
-.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.links a{text-decoration:none;font-weight:700;border:1.5px solid var(--line);border-radius:12px;padding:7px 12px;background:var(--bg)}
-footer{padding-block:32px 48px;color:var(--muted);font-size:14px}
-
-@media (max-width:640px){
-  .stage{width:150px;height:150px;transform-origin:left top}
-  .stage .pb{scale:.75}
-  .cmt form{grid-template-columns:1fr}
-  .img{grid-template-columns:1fr}
+@media (max-width:860px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100dvh}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .body{grid-template-columns:1fr}
+  .pane{overflow:visible}
+  .toc{grid-template-columns:1fr}
+  .step{flex-direction:row;text-align:left;padding:12px 16px}
+  .step .pb{width:40px}
 }
-@media (prefers-reduced-motion:reduce){ .stage .pb{animation:none;clip-path:var(--hex6);background:var(--hex)} .pb{transition:none} }
+@media (prefers-reduced-motion:reduce){ .title .logo .pb{animation:none;clip-path:var(--hex6);background:var(--hex)} .pb{transition:none} ::view-transition-group(*){animation-duration:0s} }
 </style>
 </head>
 <body>
-<div class="wrap">
-
-<div id="home">
-<header>
-  <div class="txt">
-    <span class="eyebrow">2026 수학나눔성장학교 교사 역량 강화 연수</span>
-    <h1>생성형 AI로 만드는<br><em>우리 반 맞춤형</em> 수학 학습자료</h1>
-    <p class="meta">2026. 10. 21.(수) 14:30~16:30 · 옥계초등학교 · 경북 소천초 교사 이응석</p>
-  </div>
-  <div class="stage" aria-hidden="true">
-    <div class="pb s2"></div><div class="pb s3"></div><div class="pb s1"></div><div class="pb s4"></div><div class="pb s5"></div>
-  </div>
-</header>
-<nav class="topics" id="topics" aria-label="연수 주제"></nav>
-<footer>주제를 눌러 실습 프롬프트를 복사하고, 만든 작품 링크를 올려 주세요.</footer>
+<div class="app">
+  <section id="home" aria-label="첫 화면">
+    <div class="title">
+      <div class="logo" aria-hidden="true"><div class="pb"></div></div>
+      <div><small>2026 수학나눔성장학교 교사 역량 강화 연수 · 옥계초등학교</small><h1>생성형 AI로 만드는 우리 반 맞춤형 수학 학습자료</h1></div>
+    </div>
+    <nav class="grid4" id="grid4" aria-label="메뉴"></nav>
+    <p class="meta">2026. 10. 21.(수) 14:30~16:30 · 경북 소천초 교사 이응석</p>
+  </section>
+  <section id="view" hidden aria-live="polite"></section>
 </div>
 
-<main id="parts"></main>
-</div>
+<dialog id="dlg"><div class="dhead"><h3 id="dlgTitle"></h3><button class="back" type="button" id="dlgClose">닫기</button></div><div id="dlgBody"></div></dialog>
+
 <script>
 /* 작품 링크 댓글 저장소: 구글 Apps Script 웹 앱 주소 (apps-script/Code.gs 배포 후 붙여 넣기) */
 const API_URL = "";
 
-const PARTS = [
- {id:"p1",name:"바이브코딩",desc:"말로 설명하면 AI가 수학 앱을 만들어 줘요",acc:"var(--p1)",l:"var(--p1-l)",shape:"trap6",col:"var(--trap)",items:[
-  {id:"v1",no:1,title:"교과서 찍어 퀴즈 웹앱",how:"<b>📱 휴대폰</b> · 제미나이 캔버스 — 교과서 사진을 올리고 한 줄 요청",img:{src:"assets/textbook-2-5dan.jpg",alt:"2학년 수학 교과서 '5단 곱셈구구를 알아볼까요' 쪽 사진",file:"교과서_2학년_5단곱셈구구.jpg"},
+const OLYMPIC_LEAD = "\n\n참고 예시(멀티샷): 아래 내 놀이처럼 화면 구성과 몸으로 답하는 방식을 비슷하게 만들어 줘.\n";
+const ESCAPE_LEAD = "\n\n참고 예시(멀티샷): 아래 내 방탈출처럼 이야기 → 문항 → 정답 판정 흐름을 비슷하게 만들어 줘.\n";
+const TOPICS = [
+ {id:"toc",name:"차례 안내",sub:"2시간 흐름",acc:"var(--t0)",l:"var(--t0-l)",shape:"sq6"},
+ {id:"p1",name:"바이브코딩",sub:"실습 4가지",acc:"var(--p1)",l:"var(--p1-l)",shape:"trap6",items:[
+  {id:"v1",short:"교과서 퀴즈",title:"교과서 찍어 퀴즈 웹앱",how:"<b>📱 휴대폰</b> · 제미나이 캔버스 — 교과서 사진을 올리고 한 줄 요청",
+   img:{src:"assets/textbook-2-5dan.jpg",alt:"2학년 수학 교과서 '5단 곱셈구구를 알아볼까요' 쪽",file:"교과서_2학년_5단곱셈구구.jpg"},
    prompts:[["퀴즈 웹앱","첨부한 교과서 사진으로 퀴즈 웹앱 제작\n귀엽게, 재미있는 놀이처럼, 효과음, 1분 게임으로"],["정리 게임","초등 2학년 구구단 타워 쌓기 게임 제작\n귀엽게, 재미있는 놀이, 효과음, 1분 게임으로"]]},
-  {id:"v2",no:2,title:"메타프롬프트로 수업계획 → 웹앱",how:"<b>💻 PC</b> · 제미나이 캔버스 — 프롬프트부터 물어보고, 수업 계획 다음에 웹앱",
+  {id:"v2",short:"수업계획 → 웹앱",title:"메타프롬프트 → 수업계획 → 웹앱",how:"<b>💻 PC</b> · 제미나이 캔버스 — 프롬프트부터 물어보고, 수업 계획 다음에 웹앱",
    prompts:[["① 프롬프트 제안받기","초등 2학년 수학 '시각과 시간' 몇 시 몇 분 읽기 수업 계획을 위한 프롬프트를 제안해 줘."],["② 수업 계획 받기","(①에서 받은 프롬프트 붙여 넣기)\n웹앱을 이용한 활동이 하나 들어가도록 제안해 줘."],["③ 웹앱 만들기","이 수업에서 사용할 웹앱을 만들어 줘."]]},
-  {id:"v3",no:3,title:"모션인식 수학 놀이",how:"<b>💻 PC</b> · 구글 AI 스튜디오(Build) — 카메라 '허용' 누르기",
+  {id:"v3",short:"모션인식 놀이",title:"모션인식 수학 놀이",how:"<b>💻 PC</b> · 구글 AI 스튜디오(Build) — 카메라 '허용' 누르기",
    prompts:[["모션인식 게임","초등 2학년 모션인식 구구단 게임 제작\n정답 풍선 터트리기\n카메라가 없으면 마우스나 터치로\n효과음"]],
-   refs:{title:"내 놀이 참고하기 · 모션인식 수학올림픽",lead:"\n\n참고 예시(멀티샷): 아래 내 놀이처럼 화면 구성과 몸으로 답하는 방식을 비슷하게 만들어 줘.",rows:[
-     {name:"전체 포털",links:[["포털","https://motion-math-olympics-portal.vercel.app/"]]},
-     {name:"1학년 · 동계올림픽",links:[["놀이","https://motion-math-olympics-1st.vercel.app/"]]},
-     {name:"2학년 · 하계올림픽",links:[["놀이","https://motion-math-olympics.vercel.app/"]]},
-     {name:"3학년 · 속도 & 태그형",links:[["놀이","https://motion-math-olympics-3rd.vercel.app/"]]},
-     {name:"4학년 · 동작 & 영역형",links:[["놀이","https://motion-math-olympics-4th.vercel.app/"]]},
-     {name:"5학년 · 거리 & 필드형",links:[["놀이","https://motion-math-olympics-5th.vercel.app/"]]},
-     {name:"6학년 · 표적 & 네트형",links:[["놀이","https://motion-math-olympics-6th.vercel.app/"]]}]}},
-  {id:"v4",no:4,title:"우리 학교 수학 방탈출",how:"<b>💻 PC</b> · 구글 AI 스튜디오(Build) — 학년 · 단원 · 학교 이야기만 바꾸기",
+   refs:{label:"참고할 내 놀이",lead:OLYMPIC_LEAD,rows:[
+     ["전체 포털","https://motion-math-olympics-portal.vercel.app/"],
+     ["1학년 · 동계올림픽","https://motion-math-olympics-1st.vercel.app/"],
+     ["2학년 · 하계올림픽","https://motion-math-olympics.vercel.app/"],
+     ["3학년 · 속도 & 태그형","https://motion-math-olympics-3rd.vercel.app/"],
+     ["4학년 · 동작 & 영역형","https://motion-math-olympics-4th.vercel.app/"],
+     ["5학년 · 거리 & 필드형","https://motion-math-olympics-5th.vercel.app/"],
+     ["6학년 · 표적 & 네트형","https://motion-math-olympics-6th.vercel.app/"]]}},
+  {id:"v4",short:"수학 방탈출",title:"우리 학교 수학 방탈출",how:"<b>💻 PC</b> · 구글 AI 스튜디오(Build) — 학년 · 단원 · 학교 이야기만 바꾸기",
    prompts:[["방탈출","4학년 곱셈과 나눗셈 단원 수학 방탈출\n문항 4개 제작\n구미 옥계 초등학교 이야기로\n아이들이 힌트를 찾을 수 있게 그림, 문장 힌트 제공\n4문항 정답 시 탈출 성공\n간단, 단순, 스토리"]],
-   refs:{title:"내 방탈출 참고하기 · 경북 수학 방탈출",lead:"\n\n참고 예시(멀티샷): 아래 내 방탈출처럼 이야기 → 문항 → 정답 판정 흐름을 비슷하게 만들어 줘.",rows:[
-     {name:"경주 · 금척을 쫓은 사람",links:[["방탈출","https://d628-socheon.vercel.app/"],["문항 영상","https://www.youtube.com/watch?v=UFJTUUnMutY"]]},
-     {name:"안동 · 탈을 깎던 사람",links:[["방탈출","https://d629-hahoe.vercel.app/"],["문항 영상","https://www.youtube.com/watch?v=i0LVayU6040"]]},
-     {name:"봉화",links:[["방탈출","https://d630-posae.vercel.app/"],["문항 영상","https://www.youtube.com/watch?v=uSBx5THHHwk"]]},
-     {name:"영주 · 부석사",links:[["방탈출","https://d631-buseoksa.vercel.app/"],["문항 영상","https://www.youtube.com/watch?v=3HFW0j4Wz9U"]]},
-     {name:"포항",links:[["방탈출","https://d632-yeono.vercel.app/"]]},
-     {name:"경산",links:[["방탈출","https://gyeongsan-wish-bus.vercel.app/"]]}]}}]},
- {id:"p2",name:"생성형 이미지",desc:"손으로 만든 수학 작품이 AI를 만나 예술 작품으로",acc:"var(--p2)",l:"var(--p2-l)",shape:"rho6",col:"var(--rho)",items:[
-  {id:"i1",no:1,title:"패턴블럭 작품 스타일 바꾸기",how:"<b>📷 작품 사진</b> + 제미나이 — 무엇을 만들었는지 꼭 적기",
+   refs:{label:"참고할 내 방탈출",lead:ESCAPE_LEAD,rows:[
+     ["경주 · 금척을 쫓은 사람","https://d628-socheon.vercel.app/","https://www.youtube.com/watch?v=UFJTUUnMutY"],
+     ["안동 · 탈을 깎던 사람","https://d629-hahoe.vercel.app/","https://www.youtube.com/watch?v=i0LVayU6040"],
+     ["봉화","https://d630-posae.vercel.app/","https://www.youtube.com/watch?v=uSBx5THHHwk"],
+     ["영주 · 부석사","https://d631-buseoksa.vercel.app/","https://www.youtube.com/watch?v=3HFW0j4Wz9U"],
+     ["포항","https://d632-yeono.vercel.app/"],
+     ["경산","https://gyeongsan-wish-bus.vercel.app/"]]}}]},
+ {id:"p2",name:"생성형 이미지",sub:"실습 2가지",acc:"var(--p2)",l:"var(--p2-l)",shape:"rho6",items:[
+  {id:"i1",short:"패턴블럭 스타일",title:"패턴블럭 작품 스타일 바꾸기",how:"<b>📷 작품 사진</b> + 제미나이 — 무엇을 만들었는지 꼭 적기",
    prompts:[["스타일 바꾸기","공룡\n디즈니, 레고 스타일로"]],
    styles:[["assets/style-origami.jpg","종이접기","공룡\n종이접기 스타일로"],["assets/style-ghibli.jpg","지브리","공룡\n지브리 스타일로"],["assets/style-lego.jpg","레고","공룡\n레고 스타일로"],["assets/style-clay.jpg","찰흙","공룡\n찰흙 스타일로"],
-     ["assets/tree-original.jpg","원래 작품 (패턴블럭 트리)",null],["assets/tree-disney-lego.jpg","크리스마스 트리 · 디즈니 레고","크리스마스 트리\n디즈니 레고 스타일로"],["assets/tree-princess.jpg","공주 왕자 스타일","크리스마스 트리\n공주 왕자 스타일로"]]},
-  {id:"i2",no:2,title:"프롬프트로 테셀레이션",how:"<b>✍️ 프롬프트만</b> + 제미나이 — [ ] 안 단어를 바꿔 여러 번",
+     ["assets/tree-original.jpg","원래 작품 (트리)",null],["assets/tree-disney-lego.jpg","디즈니 레고","크리스마스 트리\n디즈니 레고 스타일로"],["assets/tree-princess.jpg","공주 왕자","크리스마스 트리\n공주 왕자 스타일로"]]},
+  {id:"i2",short:"테셀레이션",title:"프롬프트로 테셀레이션",how:"<b>✍️ 프롬프트만</b> + 제미나이 — [ ] 안 단어를 바꿔 여러 번",
    prompts:[["테셀레이션","[정육각형]을 기본으로 한 테셀레이션 무늬를 만들어 줘.\n[귀여운 고양이] 모양이 빈틈과 겹침 없이 반복되고,\n[무지개 6가지 색]으로."]],
-   extra:"뽑은 뒤 확인: 정말 빈틈없이 덮였나요? 한 꼭짓점에 모인 각의 합은 360°인가요?"}]},
- {id:"p3",name:"제미나이 노트북",desc:"우리 반이 주인공인 수학 동화와 활동지",acc:"var(--p3)",l:"var(--p3-l)",shape:"tri6",col:"var(--tri)",items:[
-  {id:"n1",no:1,title:"슬라이드로 수학 동화",how:"<b>노트북</b> → 스튜디오 <b>'슬라이드'</b> ✏️ 맞춤 설정에 입력",
+   note:"뽑은 뒤 확인: 정말 빈틈없이 덮였나요? 한 꼭짓점에 모인 각의 합은 360°인가요?"}]},
+ {id:"p3",name:"제미나이 노트북",sub:"실습 2가지",acc:"var(--p3)",l:"var(--p3-l)",shape:"tri6",items:[
+  {id:"n1",short:"슬라이드 동화",title:"슬라이드로 수학 동화",how:"<b>노트북</b> → 스튜디오 <b>'슬라이드'</b> ✏️ 맞춤 설정에 입력",
    prompts:[["슬라이드 맞춤 설정","초등 2학년 2학기 수학 길이재기 펭수 수학동화 슬라이드 제작"]]},
-  {id:"n2",no:2,title:"인포그래픽으로 활동지",how:"<b>같은 노트북</b> → 스튜디오 <b>'인포그래픽'</b> ✏️ 맞춤 설정에 입력",
+  {id:"n2",short:"인포그래픽 활동지",title:"인포그래픽으로 활동지",how:"<b>같은 노트북</b> → 스튜디오 <b>'인포그래픽'</b> ✏️ 맞춤 설정에 입력",
    prompts:[["인포그래픽 맞춤 설정","수학 동화 내용으로 학생용 활동지 인포그래픽을 만들어 줘.\n· A4 세로, 귀엽고 큰 글씨\n· 답을 쓰는 칸을 넉넉하게\n· 흰색 배경"]],
-   extra:"인쇄 전 숫자 · 글자 오류를 꼭 확인하세요."}]}
+   note:"인쇄 전 숫자 · 글자 오류를 꼭 확인하세요."}]}
 ];
+const SCHEDULE=[["14:30","여는 이야기","10분","hex6","var(--hex)",null],["14:40","바이브코딩","55분","trap6","var(--trap)","p1"],["15:35","생성형 이미지","25분","rho6","var(--rho)","p2"],["16:00","제미나이 노트북","25분","tri6","var(--tri)","p3"],["16:25","마무리","5분","sq6","var(--sq)",null]];
 
-const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(n==="class")e.className=v;else if(n==="html")e.innerHTML=v;else if(n.startsWith("on"))e.addEventListener(n.slice(2),v);else e.setAttribute(n,v);}for(const c of k.flat()){if(c==null)continue;e.append(c.nodeType?c:document.createTextNode(c));}return e;};
-
-function copyText(text,pre,btn){
-  const orig=btn.dataset.label||(btn.dataset.label=btn.textContent);
-  const ok=()=>{btn.textContent="복사됨!";btn.classList.add("done");setTimeout(()=>{btn.textContent=orig;btn.classList.remove("done");},1500);};
-  const sel=()=>{if(pre.hidden){btn.textContent="복사 안 됨";setTimeout(()=>{btn.textContent=orig;},2000);return;}const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent="Ctrl+C";setTimeout(()=>{btn.textContent=orig;},2500);};
-  try{navigator.clipboard.writeText(text).then(ok,sel);}catch(e){sel();}
-}
-
-/* 내 놀이 참고하기: 링크 복사 + 프롬프트에 멀티샷으로 넣기 */
-function refBox(r,pres){
-  const box=el("div",{class:"refs"}), hint=el("p",{class:"refhint"},"넣을 놀이를 고르면 위 프롬프트 끝에 링크가 붙어요 (멀티샷). 다시 누르면 빠져요.");
-  let picked=null;
-  const update=()=>{ pres.forEach(p=>{ p.pre.textContent=p.base+(picked?r.lead+"\n"+picked.links.map(l=>l[1]).join("\n"):""); });
-    box.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",String(b._row===picked))); };
-  box.append(el("h4",{},r.title),hint);
-  const list=el("ul",{});
-  r.rows.forEach(row=>{
-    const pick=el("button",{class:"pick",type:"button","aria-pressed":"false"},"＋ 프롬프트에 넣기");
-    pick._row=row; pick.addEventListener("click",()=>{ picked=picked===row?null:row; update(); });
-    list.append(el("li",{},el("b",{},row.name),
-      el("span",{class:"lk"},row.links.map(([lab,url])=>{
-        const c=el("button",{class:"mini",type:"button"},"링크 복사"), a=el("a",{href:url,target:"_blank",rel:"noopener"},lab);
-        c.addEventListener("click",()=>copyText(url,a,c)); return el("span",{},a,c);
-      })), pick));
-  });
-  box.append(list); return box;
-}
-/* 다양한 예시 스타일 보기 */
-function styleBox(list){
-  const wrap=el("div",{class:"styles"});
-  const btn=el("button",{class:"toggle",type:"button","aria-expanded":"false"},"🎨 다양한 예시 스타일 보기");
-  const grid=el("div",{class:"sgrid",hidden:""}, list.map(([src,cap,prompt])=>{
-    const fig=el("figure",{},el("img",{src,alt:cap+" 예시",loading:"lazy"}),el("figcaption",{},cap));
-    if(prompt){ const pre=el("pre",{hidden:""},prompt), c=el("button",{class:"mini",type:"button"},"이 스타일로 복사"); c.addEventListener("click",()=>copyText(prompt,pre,c)); fig.append(c,pre); }
-    return fig;
-  }));
-  btn.addEventListener("click",()=>{ const open=grid.hidden; const go=()=>{grid.hidden=!open;btn.setAttribute("aria-expanded",String(open));btn.textContent=open?"🎨 예시 스타일 접기":"🎨 다양한 예시 스타일 보기";};
-    if(document.startViewTransition&&!reduce) document.startViewTransition(go); else go(); });
-  wrap.append(btn,grid); return wrap;
-}
-
-const root=document.getElementById("parts");
-const TIMES={p1:"실습 4가지 · 55분",p2:"실습 2가지 · 25분",p3:"실습 2가지 · 25분"};
+const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(v==null)continue;if(n==="class")e.className=v;else if(n==="html")e.innerHTML=v;else if(n.startsWith("on"))e.addEventListener(n.slice(2),v);else e.setAttribute(n,v);}for(const c of k.flat()){if(c==null)continue;e.append(c.nodeType?c:document.createTextNode(c));}return e;};
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-const tabs=document.getElementById("topics");
-PARTS.forEach(p=>{
-  const b=el("button",{class:"topic",type:"button",style:`--acc:${p.acc};--acc-l:${p.l}`},
-    el("span",{class:"pb",style:`clip-path:var(--${p.shape});background:${p.col};view-transition-name:ic-${p.id}`}),
-    el("span",{class:"t"},el("b",{},p.name),el("small",{},TIMES[p.id])));
-  b.addEventListener("click",()=>{ location.hash=p.id; });
-  tabs.append(b);
+const morph=fn=>{ if(!document.startViewTransition||reduce) return fn(); const v=document.startViewTransition(fn); v.ready.catch(()=>{}); v.finished.catch(()=>{}); };
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+
+function copyText(text,btn,fallbackNode){
+  const orig=btn.dataset.label||(btn.dataset.label=btn.textContent);
+  const done=()=>{btn.textContent="복사됨!";btn.classList.add("done");setTimeout(()=>{btn.textContent=orig;btn.classList.remove("done");},1400);};
+  const sel=()=>{ if(fallbackNode){const r=document.createRange();r.selectNodeContents(fallbackNode);const s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent="Ctrl+C";}else btn.textContent="복사 안 됨"; setTimeout(()=>{btn.textContent=orig;},2200);};
+  try{navigator.clipboard.writeText(text).then(done,sel);}catch(e){sel();}
+}
+
+/* ---------- 첫 화면 버튼 ---------- */
+const grid=document.getElementById("grid4");
+TOPICS.forEach(t=>{
+  grid.append(el("button",{class:"big",type:"button","data-id":t.id,style:`--acc:${t.acc};--acc-l:${t.l}`,onclick:()=>{location.hash=t.id;}},
+    el("span",{class:"pb",style:`clip-path:var(--${t.shape})`}),el("b",{},t.name),el("small",{},t.sub)));
 });
+
+/* ---------- 라우팅 + 모핑: 누른 버튼과 펼쳐질 화면에 같은 이름을 붙인다 ---------- */
+let curTopic=null, lastTopic=null; const curItem={};
+const view=document.getElementById("view"), home=document.getElementById("home");
+function tag(id){ grid.querySelectorAll(".big").forEach(b=>b.style.viewTransitionName=(b.dataset.id===id?"card":"none")); }
 function route(){
-  const id=location.hash.slice(1), ok=PARTS.some(p=>p.id===id);
-  const apply=()=>{
-    document.getElementById("home").hidden=ok;
-    document.querySelectorAll(".part").forEach(s=>s.hidden=s.id!==id);
-    window.scrollTo(0,0);
-  };
-  if(document.startViewTransition&&!reduce) document.startViewTransition(apply); else apply();
+  const id=location.hash.slice(1), t=TOPICS.find(x=>x.id===id)||null;
+  // 바뀌기 전 상태: 열릴 버튼(또는 열려 있던 화면)에 이름을 붙임
+  if(t){ tag(t.id); view.style.viewTransitionName="none"; } else { view.style.viewTransitionName="card"; tag(null); }
+  morph(()=>{
+    if(!t){ home.hidden=false; view.hidden=true; view.style.viewTransitionName="none"; if(lastTopic) tag(lastTopic); curTopic=null; return; }
+    tag(null); home.hidden=true; view.hidden=false; view.style.viewTransitionName="card";
+    curTopic=t; lastTopic=t.id; renderView();
+  });
 }
 addEventListener("hashchange",route);
-PARTS.forEach(p=>{
-  const sec=el("section",{class:"part",id:p.id,style:`--acc:${p.acc};--acc-l:${p.l}`},
-    el("div",{class:"top"},
-      el("h2",{},el("span",{class:"pb",style:`clip-path:var(--hex6);background:${p.col};view-transition-name:ic-${p.id}`}),p.name),
-      el("button",{class:"back",type:"button",onclick:()=>{ location.hash=""; history.replaceState(null,"",location.pathname); route(); }},"← 처음으로")),
-    el("p",{class:"desc"},p.desc));
-  p.items.forEach(x=>{
-    const card=el("article",{class:"card",id:"c-"+x.id},
-      el("h3",{},el("span",{},"실습 "+x.no),x.title),
-      el("p",{class:"how",html:x.how}));
-    if(x.img) card.append(el("div",{class:"img"},
-      el("img",{src:x.img.src,alt:x.img.alt,loading:"lazy"}),
-      el("a",{class:"btn",href:x.img.src,download:x.img.file},"⬇ 교과서 사진 받기")));
-    const pres=[];
-    x.prompts.forEach(([label,text])=>{
-      const pre=el("pre",{},text), btn=el("button",{class:"copy",type:"button","aria-label":label+" 복사"},"복사");
-      pres.push({pre,base:text});
-      btn.addEventListener("click",()=>copyText(pre.textContent,pre,btn));
-      card.append(el("div",{class:"prompt"},el("header",{},el("span",{},label),btn),pre));
-    });
-    if(x.refs) card.append(refBox(x.refs,pres));
-    if(x.styles) card.append(styleBox(x.styles));
-    if(x.extra && !x.extra.startsWith("<!--")) card.append(el("p",{class:"extra",html:x.extra}));
-    card.append(el("div",{class:"cmt",id:"cmt-"+x.id}));
-    sec.append(card);
+
+function renderView(){
+  const t=curTopic;
+  view.style.setProperty("--acc",t.acc); view.style.setProperty("--acc-l",t.l);
+  view.textContent="";
+  view.append(el("div",{class:"vhead"},
+    el("span",{class:"pb","aria-hidden":"true"}),
+    el("h2",{},t.name),
+    el("button",{class:"back",type:"button",onclick:()=>{history.pushState(null,"",location.pathname+location.search);route();}},"← 처음으로")));
+  if(t.id==="toc"){
+    view.append(el("div",{class:"body"},el("div",{class:"toc"},SCHEDULE.map(([time,name,dur,shape,col,go])=>{
+      const inner=[el("span",{class:"pb",style:`clip-path:var(--${shape});background:${col}`}),el("div",{},el("time",{},time+" · "+dur),el("br"),el("b",{},name),go?el("br"):null,go?el("em",{},"실습 보기 →"):null)];
+      return go?el("button",{class:"step",type:"button",onclick:()=>{location.hash=go;}},inner):el("div",{class:"step"},inner);
+    }))));
+    return;
+  }
+  const sel=curItem[t.id]||t.items[0].id;
+  view.append(el("div",{class:"pills",role:"tablist"},t.items.map((x,i)=>
+    el("button",{class:"pill",role:"tab",type:"button","aria-selected":String(x.id===sel),onclick:()=>{curItem[t.id]=x.id;morph(renderView);}},`실습 ${i+1} · ${x.short}`))));
+  const x=t.items.find(i=>i.id===sel);
+  view.append(el("div",{class:"body"},practicePane(x),commentPane(x)));
+}
+
+function practicePane(x){
+  const pane=el("div",{class:"pane"},el("h3",{},x.title),el("p",{class:"how",html:x.how}));
+  if(x.img){
+    const im=el("img",{src:x.img.src,alt:x.img.alt,title:"크게 보기"});
+    im.addEventListener("click",()=>openDlg("교과서 사진",el("img",{class:"big-img",src:x.img.src,alt:x.img.alt})));
+    pane.append(el("div",{class:"thumb"},im,el("a",{class:"ghost",href:x.img.src,download:x.img.file},"⬇ 교과서 사진 받기")));
+  }
+  const pres=[];
+  x.prompts.forEach(([label,text])=>{
+    const pre=el("pre",{},text), b=el("button",{class:"copy",type:"button","aria-label":label+" 복사"},"복사");
+    pres.push({pre,base:text}); b.addEventListener("click",()=>copyText(pre.textContent,b,pre));
+    pane.append(el("div",{class:"prompt"},el("div",{class:"ph"},el("span",{},label),b),pre));
   });
-  sec.hidden=true;
-  root.append(sec);
-});
+  if(x.refs){
+    const s=el("select",{"aria-label":x.refs.label},el("option",{value:""},`${x.refs.label}: 넣지 않기`),x.refs.rows.map((r,i)=>el("option",{value:String(i)},r[0])));
+    const open=el("a",{class:"ghost",target:"_blank",rel:"noopener",hidden:""},"열기 ↗");
+    const vid=el("a",{class:"ghost",target:"_blank",rel:"noopener",hidden:""},"문항 영상 ↗");
+    const cp=el("button",{class:"ghost",type:"button",hidden:""},"링크 복사");
+    const upd=()=>{ const r=s.value===""?null:x.refs.rows[+s.value];
+      pres.forEach(p=>p.pre.textContent=p.base+(r?x.refs.lead+[r[1],r[2]].filter(Boolean).join("\n"):""));
+      open.hidden=cp.hidden=!r; vid.hidden=!(r&&r[2]); if(r){open.href=r[1]; if(r[2]) vid.href=r[2];} };
+    s.addEventListener("change",upd);
+    cp.addEventListener("click",()=>{const r=x.refs.rows[+s.value];copyText([r[1],r[2]].filter(Boolean).join("\n"),cp);});
+    pane.append(el("div",{class:"tools"},s,open,vid,cp),el("p",{class:"note"},"고르면 위 프롬프트 끝에 링크가 붙어요 (멀티샷)."));
+  }
+  if(x.styles){
+    const b=el("button",{class:"ghost",type:"button"},"🎨 예시 스타일 보기");
+    b.addEventListener("click",()=>openDlg("다양한 예시 스타일",el("div",{class:"sgrid"},x.styles.map(([src,cap,pr])=>{
+      const f=el("figure",{},el("img",{src,alt:cap+" 예시",loading:"lazy"}),el("figcaption",{},cap));
+      if(pr){const c=el("button",{class:"ghost",type:"button"},"이 스타일로 복사");c.addEventListener("click",()=>copyText(pr,c));f.append(c);}
+      return f;}))));
+    pane.append(el("div",{class:"tools"},b));
+  }
+  if(x.note) pane.append(el("p",{class:"note"},x.note));
+  return pane;
+}
 
-/* ---------- 실습별 작품 링크 댓글 ---------- */
+/* ---------- 작품 링크 댓글 (이름 + 링크) ---------- */
 let posts=[];
-const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 const myTokens=store.get("okgye-tokens",{});
-const allIds=PARTS.flatMap(p=>p.items.map(x=>x.id));
-
-function renderCmt(id){
-  const box=document.getElementById("cmt-"+id); if(!box) return;
-  if(box.contains(document.activeElement)) return;      // 입력 중에는 다시 그리지 않기
-  const list=posts.filter(p=>p.prac===id);
-  box.textContent="";
-  const name=el("input",{maxlength:"20",placeholder:"이름","aria-label":"이름",value:store.get("okgye-name","")});
-  const url=el("input",{type:"url",inputmode:"url",maxlength:"500",placeholder:"내 작품 링크 붙여 넣기","aria-label":"작품 링크"});
-  const send=el("button",{class:"send",type:"submit"},"올리기");
+function commentPane(x){
+  const list=posts.filter(p=>p.prac===x.id);
+  const n=el("input",{class:"n",maxlength:"20",placeholder:"이름","aria-label":"이름",value:store.get("okgye-name","")});
+  const u=el("input",{class:"u",type:"url",inputmode:"url",maxlength:"500",placeholder:"작품 링크","aria-label":"작품 링크"});
+  const go=el("button",{class:"send",type:"submit"},"올리기");
   const msg=el("p",{class:"msg",role:"status"});
-  const form=el("form",{novalidate:""},name,url,send);
-  if(!API_URL){[name,url,send].forEach(x=>x.disabled=true);msg.textContent="링크 올리기는 곧 열려요.";}
+  const form=el("form",{novalidate:""},n,u,go);
+  if(!API_URL){[n,u,go].forEach(e=>e.disabled=true);msg.textContent="작품 올리기는 연수 시작 때 열려요.";}
   form.addEventListener("submit",async e=>{
     e.preventDefault();
-    const n=name.value.trim(),u=url.value.trim();
-    if(!n){msg.textContent="이름을 적어 주세요.";name.focus();return;}
-    if(!/^https?:\/\/\S+\.\S+/i.test(u)){msg.textContent="https:// 로 시작하는 링크를 붙여 넣어 주세요.";url.focus();return;}
-    send.disabled=true;msg.textContent="올리는 중…";
+    const nv=n.value.trim(),uv=u.value.trim();
+    if(!nv){msg.textContent="이름을 적어 주세요.";n.focus();return;}
+    if(!/^https?:\/\/\S+\.\S+/i.test(uv)){msg.textContent="https:// 로 시작하는 링크를 붙여 넣어 주세요.";u.focus();return;}
+    go.disabled=true;msg.textContent="올리는 중…";
     const token=Math.random().toString(36).slice(2)+Date.now().toString(36);
     try{
-      const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"add",prac:id,name:n,url:u,token})});
+      const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"add",prac:x.id,name:nv,url:uv,token})});
       const j=await r.json(); if(!j.ok) throw 0;
-      myTokens[j.id]=token; store.set("okgye-tokens",myTokens); store.set("okgye-name",n);
-      document.activeElement.blur(); await load();
-      const m=document.querySelector("#cmt-"+id+" .msg"); if(m) m.textContent="올렸어요!";
-    }catch(err){msg.textContent="올리지 못했어요. 다시 눌러 주세요.";send.disabled=false;}
+      myTokens[j.id]=token; store.set("okgye-tokens",myTokens); store.set("okgye-name",nv);
+      posts.unshift({id:j.id,prac:x.id,name:nv,url:uv,createdAt:Date.now()}); renderView();
+    }catch(err){msg.textContent="올리지 못했어요. 다시 눌러 주세요.";go.disabled=false;}
   });
-  box.append(form,msg);
-  if(!list.length){box.append(el("p",{class:"empty"},"아직 올라온 작품이 없어요."));return;}
-  box.append(el("ul",{class:"clist"},list.map(p=>el("li",{},
-    el("span",{class:"who"},p.name||"이름 없음"),
-    /^https?:\/\//i.test(p.url)?el("a",{href:p.url,target:"_blank",rel:"noopener noreferrer"},p.url):el("span",{},p.url),
-    myTokens[p.id]?el("button",{class:"del",type:"button",onclick:()=>del(p.id)},"삭제"):null))));
+  return el("div",{class:"pane cmt",id:"cmtPane"},
+    el("h3",{},`💬 작품 올리기 · ${list.length}`), form, msg,
+    list.length?el("ul",{},list.map(p=>el("li",{},el("b",{},p.name||"이름 없음"),
+      /^https?:\/\//i.test(p.url)?el("a",{href:p.url,target:"_blank",rel:"noopener noreferrer",title:p.url},p.url):el("span",{},p.url),
+      myTokens[p.id]?el("button",{class:"del",type:"button",onclick:()=>del(p.id)},"삭제"):null)))
+    :el("p",{class:"empty"},"아직 올라온 작품이 없어요."));
 }
 async function load(){
-  if(API_URL){ try{const r=await fetch(API_URL+"?t="+Date.now());const j=await r.json();if(Array.isArray(j.posts))posts=j.posts;}catch(e){} }
-  allIds.forEach(renderCmt);
+  if(!API_URL) return;
+  try{const r=await fetch(API_URL+"?t="+Date.now());const j=await r.json();if(Array.isArray(j.posts))posts=j.posts;}catch(e){return;}
+  const pane=document.getElementById("cmtPane");
+  if(curTopic&&curTopic.items&&pane&&!pane.contains(document.activeElement)&&!document.querySelector("dialog[open]")) renderView();
 }
 async function del(id){
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"delete",id,token:myTokens[id]})});
-    const j=await r.json(); if(j.ok){delete myTokens[id];store.set("okgye-tokens",myTokens);posts=posts.filter(p=>p.id!==id);allIds.forEach(renderCmt);}}catch(e){}
+    const j=await r.json(); if(j.ok){delete myTokens[id];store.set("okgye-tokens",myTokens);posts=posts.filter(p=>p.id!==id);renderView();}}catch(e){}
 }
+
+/* ---------- 크게 보기 창 ---------- */
+const dlg=document.getElementById("dlg");
+function openDlg(title,node){ document.getElementById("dlgTitle").textContent=title; const b=document.getElementById("dlgBody"); b.textContent=""; b.append(node); dlg.showModal(); }
+document.getElementById("dlgClose").addEventListener("click",()=>dlg.close());
+dlg.addEventListener("click",e=>{ if(e.target===dlg) dlg.close(); });
+
 route(); load();
-setInterval(()=>{if(API_URL&&!document.hidden)load();},20000);
+setInterval(()=>{ if(API_URL&&!document.hidden) load(); },20000);
 </script>
 </body>
 </html>
