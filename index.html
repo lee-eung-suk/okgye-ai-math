@@ -199,7 +199,14 @@ const TOPICS = [
      ["화가 · 그림",["피카소","고흐","몬드리안","클림트","수채화","크레파스","색연필","민화","수묵화","팝아트"]],
      ["분위기 · 장면",["지브리","디즈니","클레이 애니메이션","3D 장난감","우주","크리스마스","공주 왕자","동화책 삽화","네온사인","눈 내리는 겨울"]]]}},
   {id:"i2",short:"테셀레이션",title:"프롬프트로 테셀레이션",how:"<b>✍️ 프롬프트만</b> + 제미나이 — [ ] 안 단어를 바꿔 여러 번",
-   prompts:[["테셀레이션","[정육각형]을 기본으로 한 테셀레이션 무늬를 만들어 줘.\n[귀여운 고양이] 모양이 빈틈과 겹침 없이 반복되고,\n[무지개 6가지 색]으로."]],
+   prompts:[["테셀레이션",""]],
+   build:{template:s=>`${s.shape} 모양을 기본으로 한 테셀레이션 무늬를 만들어 줘.\n${s.theme} 모양이 빈틈과 겹침 없이 ${s.move}로 반복되고,\n${s.style} 스타일로, 정사각형 이미지로.`,
+     note:"🧩 선택지를 눌러 고르면 위 프롬프트가 바로 바뀌어요. 색 · 스타일은 여러 개 섞을 수 있어요.",
+     groups:[
+      {key:"shape",name:"기본 도형",def:["정육각형"],opts:["정삼각형","정사각형","정육각형","마름모","평행사변형","사다리꼴","정삼각형과 정육각형"]},
+      {key:"theme",name:"주제",def:["귀여운 고양이"],opts:["귀여운 고양이","공룡","물고기","새","나비","꽃","우주선","곤충","우리 학교 마스코트"]},
+      {key:"move",name:"반복 방법",def:["밀기"],opts:["밀기","돌리기","뒤집기","밀기와 돌리기"]},
+      {key:"style",name:"색 · 스타일",multi:true,def:["무지개 6색"],opts:["무지개 6색","파스텔","흑백","에셔","몬드리안","수채화","크레파스","픽셀아트","스테인드글라스","모자이크 타일","민화"]}]}},
    note:"뽑은 뒤 확인: 정말 빈틈없이 덮였나요? 한 꼭짓점에 모인 각의 합은 360°인가요?"}]},
  {id:"p3",name:"제미나이 노트북",sub:"실습 2가지",acc:"var(--p3)",l:"var(--p3-l)",shape:"tri6",items:[
   {id:"n1",short:"슬라이드 동화",title:"슬라이드로 수학 동화",how:"<b>노트북</b> → 스튜디오 <b>'슬라이드'</b> ✏️ 맞춤 설정에 입력",
@@ -293,6 +300,18 @@ function practicePane(x){
     s.addEventListener("change",upd);
     cp.addEventListener("click",()=>{const r=x.refs.rows[+s.value];copyText([r[1],r[2]].filter(Boolean).join("\n"),cp);});
     pane.append(el("div",{class:"tools"},s,open,vid,cp),el("p",{class:"note"},"고르면 위 프롬프트 끝에 링크가 붙어요 (멀티샷)."));
+  }
+  if(x.build){
+    const b=x.build, sel={}; b.groups.forEach(g=>sel[g.key]=[...g.def]); const p=pres[0];
+    const upd=()=>{ const s={}; b.groups.forEach(g=>s[g.key]=sel[g.key].length?sel[g.key].join(", "):g.def[0]); p.pre.textContent=b.template(s);
+      box.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(sel[c.dataset.k].includes(c.textContent)))); };
+    const box=el("div",{class:"styles"},el("p",{class:"note"},b.note),
+      b.groups.map(g=>el("div",{class:"sg"},el("b",{},g.name),el("div",{class:"chips"},g.opts.map(o=>{
+        const c=el("button",{class:"chip",type:"button","data-k":g.key,"aria-pressed":"false"},o);
+        c.addEventListener("click",()=>{ const a=sel[g.key], i=a.indexOf(o);
+          if(g.multi){ if(i>=0) a.splice(i,1); else a.push(o); } else { a.length=0; a.push(o); } upd(); });
+        return c; })))));
+    pane.append(box); upd();
   }
   if(x.styles){
     // 스타일 단어를 눌러 고르면(2~3개 섞기) 위 프롬프트가 바로 바뀐다
