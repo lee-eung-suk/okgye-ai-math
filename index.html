@@ -33,7 +33,7 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;color:var(--ink);font:400 15px/1.6 var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased;
+body{margin:0;color:var(--ink);font:400 15px/1.6 var(--sans);word-break:keep-all;overflow-wrap:break-word;line-break:strict;overflow:hidden;-webkit-font-smoothing:antialiased;
   background:
     radial-gradient(1200px 600px at 85% -10%, rgba(217,179,93,.10), transparent 60%),
     radial-gradient(900px 500px at -10% 110%, rgba(83,121,226,.07), transparent 60%),
@@ -161,9 +161,10 @@ a{color:inherit}
 .timeline{grid-column:1/-1;padding:40px 30px;display:flex;flex-direction:column;justify-content:center;gap:28px;min-height:0;overflow:auto}
 .bar{display:grid;grid-template-columns:10fr 55fr 25fr 25fr 5fr;height:10px;gap:4px}
 .bar span{display:block;border-radius:2px}
-.segs{display:grid;grid-template-columns:10fr 55fr 25fr 25fr 5fr;gap:4px}
+.segs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
 .seg{display:grid;align-content:start;gap:6px;padding-top:12px;border-top:1px solid var(--rule-2);min-width:0;text-align:left}
-.seg b{font-family:var(--serif);font-size:clamp(16px,1.6vw,23px)}
+.seg b{font-family:var(--serif);font-size:clamp(16px,1.6vw,23px);white-space:nowrap}
+.seg .mono{white-space:nowrap}
 button.seg:hover b{color:var(--gold)}
 .seg ul{margin:4px 0 0;padding:0;list-style:none;color:var(--ink-2);font-size:13px;display:grid;gap:2px}
 .ends{display:flex;justify-content:space-between;color:var(--ink-3)}
@@ -355,13 +356,13 @@ function refreshAfterPost(){ if(sheetFor&&dlg.open){ const b=document.getElement
 function timeline(){
   const total=SCHEDULE.reduce((a,s)=>a+s[2],0);
   return el("div",{class:"timeline"},
-    el("div",{class:"ends mono"},el("span",{},"14:30"),el("span",{},`${total}분`),el("span",{},"16:30")),
+    el("div",{class:"ends mono"},el("span",{},"14:30"),el("span",{},"16:30")),
     el("div",{class:"bar","aria-hidden":"true"},SCHEDULE.map(s=>el("span",{style:`background:${s[3]}`}))),
     el("div",{class:"segs"},SCHEDULE.map(([time,name,dur,col,go,list])=>{
       const inner=[el("span",{class:"mono",style:"font-size:12px;color:var(--ink-3)"},`${time} · ${dur}분`),el("b",{},name),list.length?el("ul",{},list.map(l=>el("li",{},l))):null];
       return go?el("button",{class:"seg",type:"button",onclick:()=>{location.hash=go;}},inner):el("div",{class:"seg"},inner);
     })),
-    el("p",{class:"hint"},"막대 길이는 실제 시간 비율이에요. 파트 이름을 누르면 실습으로 이동해요."));
+    el("p",{class:"hint"},"위 막대는 실제 시간 비율이에요. 파트 이름을 누르면 실습으로 이동해요."));
 }
 
 function practice(x){
