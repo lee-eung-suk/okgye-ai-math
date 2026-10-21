@@ -129,9 +129,9 @@ a{color:inherit}
 .ghost{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:6px 13px;border:1px solid var(--rule-2);border-radius:999px;text-decoration:none;white-space:nowrap;color:var(--ink-2)}
 .ghost:hover{border-color:var(--gold);color:var(--gold)}
 .ghost.done{border-color:var(--ok);color:var(--ok)}
-.photo{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:center;margin-bottom:6px}
-.photo img{width:150px;height:98px;object-fit:cover;border-radius:8px;cursor:zoom-in;display:block;border:1px solid var(--rule)}
-.photo p{margin:0 0 8px;color:var(--ink-2);font-size:13px}
+.photo{margin:0 0 6px;border:1px solid var(--rule);border-radius:12px;background:var(--raise);overflow:hidden}
+.photo img{width:100%;height:clamp(180px,34vh,340px);object-fit:contain;background:#0a0b0d;cursor:zoom-in;display:block}
+.photo figcaption{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px 10px 16px;color:var(--ink-2);font-size:13px}
 
 /* 작품 제출 */
 .sub{background:rgba(0,0,0,.12)}
@@ -202,7 +202,7 @@ dialog img{max-width:100%;max-height:80dvh;display:block;margin:12px auto 0;bord
   .back{padding:7px 12px}
   .main{padding:18px 16px 90px}
   .facts{gap:6px 18px}
-  .photo{grid-template-columns:110px minmax(0,1fr);gap:12px} .photo img{width:110px;height:72px}
+  .photo img{height:200px}
   .og{grid-template-columns:1fr;gap:6px} .og .cap{padding-top:0}
   .block pre{font-size:15px}
   .timeline{padding:18px 16px;justify-content:flex-start}
@@ -259,10 +259,10 @@ const TOPICS = [
    refs:{label:"참고할 내 방탈출",lead:ESCAPE_LEAD,rows:[
      ["경주 · 금척을 쫓은 사람","https://d628-socheon.vercel.app/","https://www.youtube.com/watch?v=UFJTUUnMutY"],
      ["안동 · 탈을 깎던 사람","https://d629-hahoe.vercel.app/","https://www.youtube.com/watch?v=i0LVayU6040"],
-     ["봉화","https://d630-posae.vercel.app/","https://www.youtube.com/watch?v=uSBx5THHHwk"],
-     ["영주 · 부석사","https://d631-buseoksa.vercel.app/","https://www.youtube.com/watch?v=3HFW0j4Wz9U"],
-     ["포항","https://d632-yeono.vercel.app/"],
-     ["경산","https://gyeongsan-wish-bus.vercel.app/"]]}}]},
+     ["봉화 · 볕에 말린 기록","https://d630-posae.vercel.app/","https://www.youtube.com/watch?v=uSBx5THHHwk"],
+     ["영주 · 돌을 띄운 사람","https://d631-buseoksa.vercel.app/","https://www.youtube.com/watch?v=3HFW0j4Wz9U"],
+     ["포항 · 빛을 짠 사람","https://d632-yeono.vercel.app/"],
+     ["경산 · 소원버스","https://gyeongsan-wish-bus.vercel.app/"]]}}]},
  {id:"p2",no:"03",name:"생성형 이미지",meta:"실습 2 · 25분",acc:"var(--rho)",shape:"rho6",items:[
   {id:"i1",short:"패턴블럭 스타일",title:"패턴블럭 작품, 다른 스타일로",device:"작품 사진",tool:"제미나이 이미지",tip:"무엇을 만들었는지(사물 이름)를 꼭 적어요.",
    prompts:[["스타일 바꾸기","공룡\n디즈니, 레고 스타일로"]],
@@ -373,7 +373,7 @@ function practice(x){
   if(x.img){
     const im=el("img",{src:x.img.src,alt:x.img.alt,title:"크게 보기"});
     im.addEventListener("click",()=>openDlg("교과서 사진",el("img",{src:x.img.src,alt:x.img.alt})));
-    col.append(el("div",{class:"photo"},im,el("div",{},el("p",{},"사진이 없으면 이 교과서 쪽을 받아서 써 보세요."),el("a",{class:"ghost",href:x.img.src,download:x.img.file},"사진 받기 ↓"))));
+    col.append(el("figure",{class:"photo"},im,el("figcaption",{},el("span",{},"실습용 교과서 사진 · 누르면 크게 보여요"),el("a",{class:"ghost",href:x.img.src,download:x.img.file},"사진 받기 ↓"))));
   }
   const pres=[];
   x.prompts.forEach(([label,text])=>{
