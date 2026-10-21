@@ -1,10 +1,10 @@
 /**
- * 옥계초 AI 수학 연수 — 실습별 작품 링크 댓글 저장소
+ * 옥계초 AI 수학 연수 — 실습별 작품 제출 저장소
  * 구글 시트에 붙어 있는 Apps Script입니다.
  * 배포: 배포 → 새 배포 → 유형 '웹 앱' → 실행: 나 / 액세스 권한: 모든 사용자
  */
 const SHEET = 'posts';
-const HEAD = ['id', 'createdAt', 'prac', 'name', 'url', 'token'];
+const HEAD = ['id', 'createdAt', 'prac', 'name', 'url', 'token', 'title'];
 const PRACS = ['v1', 'v2', 'v3', 'v4', 'i1', 'i2', 'n1', 'n2'];
 
 function sheet_() {
@@ -15,6 +15,7 @@ function sheet_() {
     sh.appendRow(HEAD);
     sh.setFrozenRows(1);
   }
+  if (sh.getRange(1, 7).getValue() !== 'title') sh.getRange(1, 7).setValue('title');
   return sh;
 }
 
@@ -28,13 +29,13 @@ function doGet() {
   const rows = sheet_().getDataRange().getValues().slice(1);
   const posts = rows
     .filter(r => r[0])
-    .map(r => ({ id: String(r[0]), createdAt: Number(r[1]), prac: String(r[2]), name: String(r[3]), url: String(r[4]) }))
+    .map(r => ({ id: String(r[0]), createdAt: Number(r[1]), prac: String(r[2]), name: String(r[3]), url: String(r[4]), title: String(r[6] || '') }))
     .sort((a, b) => b.createdAt - a.createdAt)
     .slice(0, 500);
   return json_({ ok: true, posts });
 }
 
-// 글 올리기 / 내 글 지우기
+// 작품 제출 / 내 글 지우기
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: 'bad_json' }); }
@@ -44,6 +45,7 @@ function doPost(e) {
     const sh = sheet_();
     if (body.action === 'add') {
       const name = String(body.name || '').trim().slice(0, 20);
+      const title = String(body.title || '').trim().slice(0, 60);
       const url = String(body.url || '').trim().slice(0, 500);
       const prac = String(body.prac || '');
       const token = String(body.token || '').slice(0, 64);
@@ -52,7 +54,7 @@ function doPost(e) {
       }
       const id = Utilities.getUuid().slice(0, 8);
       // 수식으로 해석되지 않도록 앞에 ' 를 붙여 저장
-      sh.appendRow([id, Date.now(), prac, "'" + name, "'" + url, token]);
+      sh.appendRow([id, Date.now(), prac, "'" + name, "'" + url, token, title ? "'" + title : '']);
       return json_({ ok: true, id });
     }
     if (body.action === 'delete') {
