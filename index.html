@@ -60,18 +60,21 @@ a{color:inherit}
   --trap6:polygon(25% 18%,75% 18%,87.5% 50%,100% 82%,0% 82%,12.5% 50%)}
 
 /* ---------- 첫 화면 ---------- */
-#home{flex:1;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:clamp(16px,3.2vh,34px);width:100%;max-width:1240px;margin:0 auto}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
-.mark{display:flex;align-items:center;gap:10px}
-.mark img{width:22px;height:22px;display:block}
+#home{position:relative;flex:1;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto auto;gap:clamp(16px,3.2vh,34px);width:100%;max-width:1240px;margin:0 auto}
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;animation:bgIn 1.6s cubic-bezier(.2,.6,.2,1) both}
+.bg::before{content:"";position:absolute;inset:0;background:url("assets/hero.jpg") right 35%/cover no-repeat;filter:brightness(1.2) saturate(1.1) contrast(1.05)}
+.bg::after{content:"";position:absolute;inset:0;background:
+    linear-gradient(90deg,var(--paper) 0%,rgba(13,14,17,.72) 26%,rgba(13,14,17,.15) 48%,rgba(13,14,17,0) 60%),
+    linear-gradient(0deg,var(--paper) 0%,rgba(13,14,17,.5) 12%,rgba(13,14,17,0) 30%)}
+@keyframes bgIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
 .hero{align-self:end}
-.hero h1{font-size:clamp(34px,6.4vw,96px);line-height:1.08;font-weight:700}
+.hero h1{font-size:clamp(42px,8vw,128px);line-height:1.06;font-weight:700;text-shadow:0 2px 30px rgba(0,0,0,.45)}
 .hero h1 .l{display:block}
 .morph{position:relative;display:block;height:1.2em;color:var(--gold);filter:url(#threshold) blur(.6px)}
 .morph span{position:absolute;left:0;top:0;white-space:nowrap;background:linear-gradient(180deg,var(--gold-2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
 @supports not (filter:url(#threshold)){ .morph{filter:none} }
 .cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.row{position:relative;width:100%;height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:clamp(14px,3vh,34px);text-align:left;padding:clamp(16px,2.4vh,22px) 20px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));border:1px solid var(--rule);border-radius:14px;transition:border-color .3s,transform .3s,background .3s;overflow:hidden}
+.row{position:relative;width:100%;height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:clamp(14px,3vh,34px);text-align:left;padding:clamp(16px,2.4vh,22px) 20px;background:linear-gradient(180deg,rgba(28,30,36,.72),rgba(18,19,24,.78));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--rule);border-radius:14px;transition:border-color .3s,transform .3s,background .3s;overflow:hidden}
 .row::after{content:"";position:absolute;inset:auto -20% -60% auto;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--acc) 0%,transparent 65%);opacity:0;transition:opacity .4s}
 .row .h{display:flex;justify-content:space-between;align-items:center}
 .row .n{color:var(--ink-3);font-size:12px}
@@ -79,7 +82,7 @@ a{color:inherit}
 .row b{font-family:var(--serif);font-size:clamp(20px,1.9vw,27px);font-weight:700;align-self:end;line-height:1.2}
 .row .f{display:flex;justify-content:space-between;align-items:center;color:var(--ink-3);font-size:12.5px}
 .row .ar{transition:transform .3s;color:var(--ink-2)}
-.row:hover{border-color:var(--rule-2);transform:translateY(-3px);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015))}
+.row:hover{border-color:var(--rule-2);transform:translateY(-3px);background:linear-gradient(180deg,rgba(36,38,45,.8),rgba(22,24,29,.84))}
 .row:hover::after{opacity:.18}
 .row:hover .ar{transform:translateX(4px);color:var(--gold)}
 .row:hover .shape{clip-path:var(--hex6)!important;transform:rotate(60deg)}
@@ -189,8 +192,9 @@ dialog img{max-width:100%;max-height:80dvh;display:block;margin:12px auto 0;bord
 }
 @media (max-width:640px){
   .app{padding:max(14px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-  .top > .cap{display:none}
-  .hero h1{font-size:clamp(30px,9.4vw,44px)}
+  .hero h1{font-size:clamp(36px,11.6vw,56px)}
+  .bg::before{background:url("assets/hero.jpg") 80% 0/auto 58% no-repeat}
+  .bg::after{background:linear-gradient(0deg,var(--paper) 0%,rgba(13,14,17,.92) 46%,rgba(13,14,17,.15) 66%,rgba(13,14,17,.3) 100%)}
   .cards{gap:10px}
   .row{padding:14px;gap:12px;border-radius:12px}
   .row b{font-size:18px}
@@ -208,22 +212,19 @@ dialog img{max-width:100%;max-height:80dvh;display:block;margin:12px auto 0;bord
   .timeline{padding:18px 16px;justify-content:flex-start}
   .timeline .bar{display:none} .segs{grid-template-columns:1fr;gap:14px}
 }
-@media (prefers-reduced-motion:reduce){ ::view-transition-group(*){animation-duration:0s} .row,.row .shape,.row .ar{transition:none} .morph{filter:none} }
+@media (prefers-reduced-motion:reduce){ .bg{animation:none} ::view-transition-group(*){animation-duration:0s} .row,.row .shape,.row .ar{transition:none} .morph{filter:none} }
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="threshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter></defs></svg>
 <div class="app">
   <section id="home" aria-label="첫 화면">
-    <header class="top">
-      <span class="mark"><img src="assets/icon-32.png" alt=""><span class="cap">2026 수학나눔성장학교 · 교사 역량 강화 연수</span></span>
-      <span class="cap">옥계초등학교</span>
-    </header>
+    <div class="bg" aria-hidden="true"></div>
     <div class="hero">
       <h1><span class="l">생성형 AI로 만드는</span><span class="l">우리 반 맞춤형</span><span class="morph" aria-hidden="true"><span id="mw1">수학 학습자료</span><span id="mw2"></span></span><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">수학 학습자료</span></h1>
     </div>
     <nav aria-label="메뉴"><ol class="cards" id="menu"></ol></nav>
-    <div class="foot"><span class="mono">2026.10.21 WED · 14:30–16:30</span><span>경북 소천초등학교 교사 이응석</span></div>
+    <div class="foot"><span><span class="mono">2026.10.21 WED · 14:30–16:30</span> · 옥계초등학교</span><span>경북 소천초등학교 교사 이응석</span></div>
   </section>
   <section id="view" hidden aria-live="polite"></section>
 </div>
